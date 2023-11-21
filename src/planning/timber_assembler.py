@@ -16,7 +16,7 @@ class TimberAssemblyPlanner(object):
         self.planner_id = str(planner_id) if planner_id else "RRTConnect"
         self.path_constraints = path_constraints if path_constraints else None
         self.current_configuration = start_configuration if start_configuration else robot.zero_configuration()
-
+        
 
     def goal_constraints(self, frame, tolerance_position = None, tolerance_xaxis = None, tolerance_yaxis = None, tolerance_zaxis = None):
         tolerance_position = tolerance_position or 0.001
@@ -37,7 +37,6 @@ class TimberAssemblyPlanner(object):
         if attached_collision_meshes:
             self.attached_collision_meshes.extend([AttachedCollisionMesh(mesh, 'robot11_tool0', touch_links = self.robot.get_link_names()) for mesh in attached_collision_meshes])
         planner_id = str(planner_id) if planner_id else "RRTConnect"
-
         if (self.robot.client and self.robot.client.is_connected):
             options = dict(
                     attached_collision_meshes = self.attached_collision_meshes,
@@ -45,7 +44,6 @@ class TimberAssemblyPlanner(object):
                     planner_id=self.planner_id
                     )
             if linear:
-                print("Linear motion through {}".format(target_frame))
                 this_trajectory = self.robot.plan_cartesian_motion(target_frame, start_configuration=self.current_configuration, group=self.group, options = options)
             else:
                 goal_constraint = self.goal_constraints(target_frame)
@@ -72,7 +70,6 @@ class TimberAssemblyPlanner(object):
         return configs
 
     def pick_and_place(self, target_frames, object_meshes, pickup_frame, path_constraints = None, group = None):
-        print(self.robot.get_link_names())
         
         self.configurations = []
         self.current_configuration['robot11_joint_EA_Z'] = -4
@@ -81,7 +78,6 @@ class TimberAssemblyPlanner(object):
             self.path_constraints = path_constraints
         else:
             self.path_constraints = [JointConstraint('robot11_joint_EA_Z', -3, 1, 1, 1.0)]
-
         if group:
             self.group = group
         else:
